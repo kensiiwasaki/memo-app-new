@@ -1,8 +1,11 @@
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { useTheme } from '@/providers/ThemeProvider';
 
 export function LoadingScreen() {
+  const { isDark } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isDark && styles.containerDark]}>
       <ActivityIndicator size="large" color="#FFD700" />
     </View>
   );
@@ -14,5 +17,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FFFFE0',
+  },
+  containerDark: {
+    backgroundColor: '#000',
   },
 });
