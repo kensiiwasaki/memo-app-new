@@ -1,35 +1,27 @@
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useColorScheme } from 'react-native';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { AuthProvider } from '@/providers/AuthProvider';
 import { SupabaseProvider } from '@/providers/SupabaseProvider';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ThemeProvider } from '@/providers/ThemeProvider';
 
 export default function RootLayout() {
   useFrameworkReady();
+  const colorScheme = useColorScheme();
 
   return (
-    <SafeAreaProvider>
-      <SupabaseProvider>
+    <SupabaseProvider>
+      <ThemeProvider>
         <AuthProvider>
-          <Stack
-            screenOptions={{
-              headerShown: true,
-              headerStyle: {
-                backgroundColor: '#ffffff',
-              },
-              contentStyle: {
-                backgroundColor: '#ffffff',
-              },
-            }}
-          >
+          <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(auth)" />
             <Stack.Screen name="(tabs)" />
           </Stack>
-          <StatusBar style="auto" />
+          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
         </AuthProvider>
-      </SupabaseProvider>
-    </SafeAreaProvider>
+      </ThemeProvider>
+    </SupabaseProvider>
   );
 }
