@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { Heart, ArrowLeft, Send, Trash2, MoveVertical as MoreVertical } from 'lucide-react-native';
+import { Heart, ArrowLeft, Send, Trash2 } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { Memo, Comment } from '@/types';
 import { useMemos } from '@/hooks/useMemos';
+import { useTheme } from '@/providers/ThemeProvider';
 
 export default function MemoDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -15,6 +16,7 @@ export default function MemoDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const { deleteMemo } = useMemos();
+  const { isDark } = useTheme();
 
   useEffect(() => {
     fetchMemoAndComments();
@@ -28,7 +30,6 @@ export default function MemoDetailScreen() {
 
   const fetchMemoAndComments = async () => {
     try {
-      // Fetch memo
       const { data: memoData, error: memoError } = await supabase
         .from('memos')
         .select('*')
@@ -37,7 +38,6 @@ export default function MemoDetailScreen() {
 
       if (memoError) throw memoError;
 
-      // Fetch comments
       const { data: commentsData, error: commentsError } = await supabase
         .from('comments')
         .select('*')
@@ -153,19 +153,19 @@ export default function MemoDetailScreen() {
 
   if (!memo) {
     return (
-      <View style={styles.container}>
-        <Text>Memo not found</Text>
+      <View style={[styles.container, isDark && styles.containerDark]}>
+        <Text style={[styles.errorText, isDark && styles.textDark]}>Memo not found</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      <View style={[styles.header, isDark && styles.headerDark]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <ArrowLeft size={24} color="#000" />
+          <ArrowLeft size={24} color={isDark ? '#fff' : '#000'} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Memo Detail</Text>
+        <Text style={[styles.headerTitle, isDark && styles.textDark]}>Memo Detail</Text>
         {currentUserId === memo.user_id && (
           <TouchableOpacity onPress={handleDeleteMemo} style={styles.deleteButton}>
             <Trash2 size={20} color="#FF4444" />
@@ -173,12 +173,12 @@ export default function MemoDetailScreen() {
         )}
       </View>
 
-      <View style={styles.memoCard}>
-        <Text style={styles.memoContent}>{memo.content}</Text>
-        <View style={styles.memoActions}>
+      <View style={[styles.memoCard, isDark && styles.cardDark]}>
+        <Text style={[styles.memoContent, isDark && styles.textDark]}>{memo.content}</Text>
+        <View style={[styles.memoActions, isDark && styles.borderDark]}>
           <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
-            <Heart size={20} color="#666" />
-            <Text style={styles.actionText}>{memo.likes || 0}</Text>
+            <Heart size={20} color={isDark ? '#fff' : '#666'} />
+            <Text style={[styles.actionText, isDark && styles.textDark]}>{memo.likes || 0}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -187,9 +187,9 @@ export default function MemoDetailScreen() {
         data={comments}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.commentCard}>
+          <View style={[styles.commentCard, isDark && styles.cardDark]}>
             <View style={styles.commentHeader}>
-              <Text style={styles.commentContent}>{item.content}</Text>
+              <Text style={[styles.commentContent, isDark && styles.textDark]}>{item.content}</Text>
               {currentUserId === item.user_id && (
                 <TouchableOpacity
                   onPress={() => handleDeleteComment(item.id)}
@@ -198,7 +198,7 @@ export default function MemoDetailScreen() {
                 </TouchableOpacity>
               )}
             </View>
-            <Text style={styles.commentDate}>
+            <Text style={[styles.commentDate, isDark && styles.textDark]}>
               {new Date(item.created_at).toLocaleDateString()}
             </Text>
           </View>
@@ -206,13 +206,15 @@ export default function MemoDetailScreen() {
         style={styles.commentsList}
       />
 
-      <View style={styles.commentInput}>
+      <View style={[styles.commentInput, isDark && styles.commentInputDark]}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, isDark && styles.inputDark]}
           value={newComment}
           onChangeText={setNewComment}
           placeholder="Add a comment..."
+          placeholderTextColor={isDark ? '#666' : '#999'}
           multiline
+          color={isDark ? '#fff' : '#000'}
         />
         <TouchableOpacity
           onPress={handleComment}
@@ -230,6 +232,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFE0',
   },
+  containerDark: {
+    backgroundColor: '#000',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -237,6 +242,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
     backgroundColor: 'white',
+  },
+  headerDark: {
+    backgroundColor: '#1a1a1a',
+    borderBottomColor: '#333',
   },
   backButton: {
     marginRight: 16,
@@ -260,6 +269,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  cardDark: {
+    backgroundColor: '#1a1a1a',
+    shadowColor: '#fff',
+  },
   memoContent: {
     fontSize: 16,
     marginBottom: 12,
@@ -269,6 +282,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#eee',
     paddingTop: 12,
+  },
+  borderDark: {
+    borderTopColor: '#333',
   },
   actionButton: {
     flexDirection: 'row',
@@ -314,6 +330,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#eee',
   },
+  commentInputDark: {
+    backgroundColor: '#1a1a1a',
+    borderTopColor: '#333',
+  },
   input: {
     flex: 1,
     backgroundColor: '#f5f5f5',
@@ -323,10 +343,22 @@ const styles = StyleSheet.create({
     marginRight: 8,
     maxHeight: 100,
   },
+  inputDark: {
+    backgroundColor: '#333',
+    color: '#fff',
+  },
   sendButton: {
     padding: 8,
   },
   sendButtonDisabled: {
     opacity: 0.5,
+  },
+  errorText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  textDark: {
+    color: '#fff',
   },
 });

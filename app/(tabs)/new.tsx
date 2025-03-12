@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { useMemos } from '@/hooks/useMemos';
+import { useTheme } from '@/providers/ThemeProvider';
 
 export default function NewMemoScreen() {
   const [content, setContent] = useState('');
   const { createMemo } = useMemos();
+  const { isDark } = useTheme();
 
   const handleSubmit = async () => {
     if (content.trim()) {
@@ -15,17 +17,23 @@ export default function NewMemoScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isDark && styles.containerDark]}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, isDark && styles.inputDark]}
         placeholder="What's on your mind?"
+        placeholderTextColor={isDark ? '#666' : '#999'}
         value={content}
         onChangeText={setContent}
         multiline
         autoFocus
+        color={isDark ? '#fff' : '#000'}
       />
       <TouchableOpacity
-        style={[styles.button, !content.trim() && styles.buttonDisabled]}
+        style={[
+          styles.button,
+          !content.trim() && styles.buttonDisabled,
+          isDark && styles.buttonDark,
+        ]}
         onPress={handleSubmit}
         disabled={!content.trim()}>
         <Text style={styles.buttonText}>Post Memo</Text>
@@ -40,6 +48,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFE0',
     padding: 16,
   },
+  containerDark: {
+    backgroundColor: '#000',
+  },
   input: {
     backgroundColor: 'white',
     borderRadius: 12,
@@ -47,12 +58,19 @@ const styles = StyleSheet.create({
     minHeight: 120,
     textAlignVertical: 'top',
   },
+  inputDark: {
+    backgroundColor: '#1a1a1a',
+    color: '#fff',
+  },
   button: {
     backgroundColor: '#FFD700',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 16,
+  },
+  buttonDark: {
+    backgroundColor: '#FFD700',
   },
   buttonDisabled: {
     opacity: 0.5,
