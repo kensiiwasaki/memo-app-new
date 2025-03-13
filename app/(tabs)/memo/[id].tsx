@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Heart, ArrowLeft, Send, Trash2 } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
@@ -24,7 +32,9 @@ export default function MemoDetailScreen() {
   }, [id]);
 
   const getCurrentUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     setCurrentUserId(user?.id || null);
   };
 
@@ -76,16 +86,16 @@ export default function MemoDetailScreen() {
     if (!newComment.trim()) return;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
-        .from('comments')
-        .insert({
-          content: newComment.trim(),
-          memo_id: id,
-          user_id: user.id,
-        });
+      const { error } = await supabase.from('comments').insert({
+        content: newComment.trim(),
+        memo_id: id,
+        user_id: user.id,
+      });
 
       if (error) throw error;
 
@@ -97,26 +107,22 @@ export default function MemoDetailScreen() {
   };
 
   const handleDeleteMemo = () => {
-    Alert.alert(
-      'Delete Memo',
-      'Are you sure you want to delete this memo?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteMemo(id as string);
-              router.back();
-            } catch (error) {
-              console.error('Error deleting memo:', error);
-              Alert.alert('Error', 'Failed to delete memo');
-            }
-          },
+    Alert.alert('Delete Memo', 'Are you sure you want to delete this memo?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteMemo(id as string);
+            router.back();
+          } catch (error) {
+            console.error('Error deleting memo:', error);
+            Alert.alert('Error', 'Failed to delete memo');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleDeleteComment = async (commentId: string) => {
@@ -154,7 +160,9 @@ export default function MemoDetailScreen() {
   if (!memo) {
     return (
       <View style={[styles.container, isDark && styles.containerDark]}>
-        <Text style={[styles.errorText, isDark && styles.textDark]}>Memo not found</Text>
+        <Text style={[styles.errorText, isDark && styles.textDark]}>
+          Memo not found
+        </Text>
       </View>
     );
   }
@@ -162,23 +170,35 @@ export default function MemoDetailScreen() {
   return (
     <View style={[styles.container, isDark && styles.containerDark]}>
       <View style={[styles.header, isDark && styles.headerDark]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
           <ArrowLeft size={24} color={isDark ? '#fff' : '#000'} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, isDark && styles.textDark]}>Memo Detail</Text>
+        <Text style={[styles.headerTitle, isDark && styles.textDark]}>
+          Memo Detail
+        </Text>
         {currentUserId === memo.user_id && (
-          <TouchableOpacity onPress={handleDeleteMemo} style={styles.deleteButton}>
+          <TouchableOpacity
+            onPress={handleDeleteMemo}
+            style={styles.deleteButton}
+          >
             <Trash2 size={20} color="#FF4444" />
           </TouchableOpacity>
         )}
       </View>
 
       <View style={[styles.memoCard, isDark && styles.cardDark]}>
-        <Text style={[styles.memoContent, isDark && styles.textDark]}>{memo.content}</Text>
+        <Text style={[styles.memoContent, isDark && styles.textDark]}>
+          {memo.content}
+        </Text>
         <View style={[styles.memoActions, isDark && styles.borderDark]}>
           <TouchableOpacity onPress={handleLike} style={styles.actionButton}>
             <Heart size={20} color={isDark ? '#fff' : '#666'} />
-            <Text style={[styles.actionText, isDark && styles.textDark]}>{memo.likes || 0}</Text>
+            <Text style={[styles.actionText, isDark && styles.textDark]}>
+              {memo.likes || 0}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -189,11 +209,14 @@ export default function MemoDetailScreen() {
         renderItem={({ item }) => (
           <View style={[styles.commentCard, isDark && styles.cardDark]}>
             <View style={styles.commentHeader}>
-              <Text style={[styles.commentContent, isDark && styles.textDark]}>{item.content}</Text>
+              <Text style={[styles.commentContent, isDark && styles.textDark]}>
+                {item.content}
+              </Text>
               {currentUserId === item.user_id && (
                 <TouchableOpacity
                   onPress={() => handleDeleteComment(item.id)}
-                  style={styles.commentDeleteButton}>
+                  style={styles.commentDeleteButton}
+                >
                   <Trash2 size={16} color="#FF4444" />
                 </TouchableOpacity>
               )}
@@ -208,18 +231,25 @@ export default function MemoDetailScreen() {
 
       <View style={[styles.commentInput, isDark && styles.commentInputDark]}>
         <TextInput
-          style={[styles.input, isDark && styles.inputDark]}
+          style={[
+            styles.input,
+            isDark && styles.inputDark,
+            { color: isDark ? '#fff' : '#000' },
+          ]}
           value={newComment}
           onChangeText={setNewComment}
           placeholder="Add a comment..."
           placeholderTextColor={isDark ? '#666' : '#999'}
           multiline
-          color={isDark ? '#fff' : '#000'}
         />
         <TouchableOpacity
           onPress={handleComment}
-          style={[styles.sendButton, !newComment.trim() && styles.sendButtonDisabled]}
-          disabled={!newComment.trim()}>
+          style={[
+            styles.sendButton,
+            !newComment.trim() && styles.sendButtonDisabled,
+          ]}
+          disabled={!newComment.trim()}
+        >
           <Send size={20} color={newComment.trim() ? '#FFD700' : '#999'} />
         </TouchableOpacity>
       </View>
