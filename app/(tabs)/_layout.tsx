@@ -1,13 +1,21 @@
+import React from 'react';
 import { Tabs } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Chrome as Home, CirclePlus as PlusCircle, User } from 'lucide-react-native';
+import {
+  Chrome as Home,
+  CirclePlus as PlusCircle,
+  User,
+} from 'lucide-react-native';
 import { useTheme } from '@/providers/ThemeProvider';
 
 export default function TabLayout() {
   const { isDark } = useTheme();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? '#000' : '#FFFFE0' }}>
+    <>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: isDark ? '#000' : '#FFFFE0' }}
+      />
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -17,7 +25,8 @@ export default function TabLayout() {
           },
           tabBarActiveTintColor: isDark ? '#FFD700' : '#000',
           tabBarInactiveTintColor: isDark ? '#666' : '#666',
-        }}>
+        }}
+      >
         <Tabs.Screen
           name="index"
           options={{
@@ -29,7 +38,9 @@ export default function TabLayout() {
           name="new"
           options={{
             title: 'New Memo',
-            tabBarIcon: ({ color, size }) => <PlusCircle size={size} color={color} />,
+            tabBarIcon: ({ color, size }) => (
+              <PlusCircle size={size} color={color} />
+            ),
           }}
         />
         <Tabs.Screen
@@ -46,6 +57,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-    </SafeAreaView>
+    </>
   );
 }
