@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+} from 'react-native';
 import { router } from 'expo-router';
 import { useMemos } from '@/hooks/useMemos';
 import { useTheme } from '@/providers/ThemeProvider';
@@ -19,14 +25,17 @@ export default function NewMemoScreen() {
   return (
     <View style={[styles.container, isDark && styles.containerDark]}>
       <TextInput
-        style={[styles.input, isDark && styles.inputDark]}
+        style={[
+          styles.input,
+          isDark && styles.inputDark,
+          { color: isDark ? '#fff' : '#000' },
+        ]}
         placeholder="What's on your mind?"
         placeholderTextColor={isDark ? '#666' : '#999'}
         value={content}
         onChangeText={setContent}
         multiline
         autoFocus
-        color={isDark ? '#fff' : '#000'}
       />
       <TouchableOpacity
         style={[
@@ -35,7 +44,8 @@ export default function NewMemoScreen() {
           isDark && styles.buttonDark,
         ]}
         onPress={handleSubmit}
-        disabled={!content.trim()}>
+        disabled={!content.trim()}
+      >
         <Text style={styles.buttonText}>Post Memo</Text>
       </TouchableOpacity>
     </View>
