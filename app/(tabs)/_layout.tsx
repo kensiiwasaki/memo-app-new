@@ -1,4 +1,3 @@
-import React from 'react';
 import { Tabs } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -12,10 +11,10 @@ export default function TabLayout() {
   const { isDark } = useTheme();
 
   return (
-    <>
-      <SafeAreaView
-        style={{ flex: 1, backgroundColor: isDark ? '#000' : '#FFFFE0' }}
-      />
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDark ? '#000' : '#FFFFE0' }}
+      edges={['top', 'left', 'right']}
+    >
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -57,6 +56,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-    </>
+    </SafeAreaView>
   );
 }
