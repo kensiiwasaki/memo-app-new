@@ -1,13 +1,9 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-
-interface User {
-  id: string;
-  email: string;
-}
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface AuthState {
-  user: User | null;
+  user: SupabaseUser | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
@@ -20,7 +16,9 @@ export const useAuth = create<AuthState>((set) => ({
   isLoading: true,
   initialize: async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       set({ user, isLoading: false });
     } catch (error) {
       set({ user: null, isLoading: false });
