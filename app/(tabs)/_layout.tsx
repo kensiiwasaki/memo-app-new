@@ -1,10 +1,6 @@
 import { Tabs } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  Chrome as Home,
-  CirclePlus as PlusCircle,
-  User,
-} from 'lucide-react-native';
+import { Home, CirclePlus as PlusCircle, User } from 'lucide-react-native';
 import { useTheme } from '@/providers/ThemeProvider';
 
 export default function TabLayout() {
